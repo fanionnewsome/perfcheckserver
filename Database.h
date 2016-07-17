@@ -13,6 +13,7 @@ public:
 
 	bool openDatabase(std::string filename);
 	int executeQuery(std::string query);
+	void displayTable(std::string tableName);
 	static int callback(void *notUsed, int argc, char **argv, char **columnName);
 
 private:

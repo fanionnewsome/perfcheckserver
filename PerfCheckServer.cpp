@@ -4,20 +4,56 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string.h>
+#include <sstream>
 #include "Lib\mongoose\include\mongoose.h"
+#include "Database.h"
+#include "PerformanceData.h"
+
 using namespace std;
 #define NS_HTTP_REQUEST 100 /* struct http_message * */
 
 static const char *http_port = "8000";
 static struct mg_serve_http_opts http_server_options;
-
+Database *prod = NULL;
+Database *test = NULL;
 //void sendEmailAlert(const string& emailAddr, const string& body, const string& subject = "PerfCheck - Email Alert") {
 
 //}
 
+static int InsertPerformanceData(PerformanceData *data, std::string tableName) {
+	int result = 0;
+	std::stringstream ss;
+
+	printf("Checking if table: '%s' exists'", tableName.c_str());
+	ss << "SELECT name FROM sqlite_master WHERE type='table' and name='" << tableName << "';";
+	std::string tableExistsQuery = ss.str();
+	ss.str(std::string());
+
+	result = prod->executeQuery(tableExistsQuery);
+	if (result == 0) {
+		std::string createTable("");
+		ss << "CREATE TABLE " << tableName << " (id INTEGER PRIMARY KEY, memory INTEGER, cpu INTEGER, disk INTEGER);";
+		result = prod->executeQuery(ss.str());
+
+		if (result) {
+			printf("Creating table '%s' was successful", tableName.c_str());
+		}
+		else {
+			printf("Creating table '%s' failed!", tableName.c_str());
+		}
+	}
+	else if (result == 1) { // table exists so let's insert
+		std::string insertData("");
+		ss << "INSERT INTO " << tableName << "(memory, cpu, disk) VALUES('" << data->getMemory() << "','" << data->getCPU() << "','" << data->getDiskSpace() << "');";
+		result = prod->executeQuery(ss.str());
+	}
+	return result;
+}
+
 // memory=1235132&cpu=90perc&disk=50perc
 static void handle_perfcheck_call(struct mg_connection *connection, struct http_message *hm) 
 {
+	std::string performanceTable("PerformanceCheck");
 	char memory[120], cpu[120], disk[120];
 	printf("message with dot p: %s\n" , hm->query_string.p);
 	// GET form variables 
@@ -25,17 +61,22 @@ static void handle_perfcheck_call(struct mg_connection *connection, struct http_
 	mg_get_http_var(&hm->query_string, "cpu", cpu, sizeof(cpu));
 	mg_get_http_var(&hm->query_string, "disk", disk, sizeof(disk));
 
-	
-	printf("memory: %s\r\n", memory);
-	printf("cpu: %s\r\n", cpu);
-	printf("disk: %s\r\n", disk);
+	//printf("memory: %s\r\n", memory);
+	//printf("cpu: %s\r\n", cpu);
+	//printf("disk: %s\r\n", disk);
 
+	// insert into the database
+	PerformanceData * pd = new PerformanceData(atol(memory),atol(cpu),atol(disk));
+	int status = InsertPerformanceData(pd, performanceTable);
+
+	prod->displayTable(performanceTable);
 	// Send Headers
 	mg_printf(connection, "%s", "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n");
 
 	// send empty chunk, indicate end of response
 	mg_send_http_chunk(connection, "", 0); 
 }
+
 
 static void ev_handler(struct mg_connection *connection, int ev, void *ev_data) 
 {
@@ -75,6 +116,10 @@ int main(int argc, char *argv[])
 			http_port = argv[++i];
 		}
 	}
+
+	// open database
+    prod = new Database("prod.db");
+	test = new Database("test.db");
 
 	// Set HTTP server options
 	connection = mg_bind(&event_manager, http_port, ev_handler);
