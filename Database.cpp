@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Database.h"
 #include <ios>
+#include <sstream>
 
-
-Database::Database(std::string filename): _filename(filename)
+Database::Database(std::string filename): _filename(filename), _databaseOpen(false)
 {
 	// initialize engine
 	int status = 0;
@@ -11,6 +11,7 @@ Database::Database(std::string filename): _filename(filename)
 	{
 		printf("Failed to initialize library: %d\n", status);
 	}
+	openDatabase(_filename);
 }
 
 
@@ -21,6 +22,10 @@ Database::~Database()
 	}
 }
 
+sqlite3* Database::getConnection() const {
+	return this->_connection;
+}
+
 bool Database::openDatabase(std::string filename) {
 	this->_status = sqlite3_open(filename.c_str(), &this->_connection);
 
@@ -28,23 +33,29 @@ bool Database::openDatabase(std::string filename) {
 	{
 		std::cerr << "Error opening SQLite3 database: " << sqlite3_errmsg(_connection) << std::endl << std::endl;
 		sqlite3_close(_connection);
+		this->_databaseOpen = false;
 		return false;
 	}
 	else {
 		cout << "Opened " << filename.c_str() << " successfully" << std::endl;
+		this->_databaseOpen = true;
 	}
 	return true;
 }
 
 void Database::displayTable(std::string tableName) {
-	// Display MyTable
-	std::cout << "Retrieving values in MyTable ..." << std::endl;
-	const char *sqlSelect = "SELECT * FROM MyTable;";
+	
+	//
+	// Display the given table
+	//
+	std::stringstream ss;
 	char **results = NULL;
 	int rows, columns;
 	char *error;
 
-	int status = sqlite3_get_table(_connection, sqlSelect, &results, &rows, &columns, &error);
+	ss << "SELECT * FROM " << tableName << ";";
+	std::string sqlSelect(ss.str());
+	int status = sqlite3_get_table(_connection, sqlSelect.c_str(), &results, &rows, &columns, &error);
 	if (status)
 	{
 		std::cerr << "Error executing SQLite3 query: " << sqlite3_errmsg(_connection) << std::endl << std::endl;
@@ -87,14 +98,14 @@ void Database::displayTable(std::string tableName) {
 
 int Database::executeQuery(std::string query) {
 
-	this->_status = sqlite3_exec(this->_connection, query.c_str(), callback, 0, &this->_errorMessage);
+	int status = sqlite3_exec(getConnection(), query.c_str(), callback, 0, &this->_errorMessage);
     
-	if (this->_status != SQLITE_OK) {
+	if (status != SQLITE_OK) {
 		fprintf(stderr, "SQL Error: %s\n", this->_errorMessage);
 		sqlite3_free(this->_errorMessage);
 	}
 
-	return this->_status;
+	return status;
 }
 
 int Database::callback(void *notUsed, int argc, char **argv, char **columnName) {

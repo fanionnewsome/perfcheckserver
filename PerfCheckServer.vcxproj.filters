@@ -36,6 +36,9 @@
     <ClInclude Include="PerformanceData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Email.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -53,10 +56,12 @@
     <ClCompile Include="PerformanceData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Email.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="sqlite3.lib">
-      <Filter>Lib</Filter>
-    </Library>
+    <Library Include="sqlite3.lib" />
+    <Library Include="PocoNet.lib" />
   </ItemGroup>
 </Project>

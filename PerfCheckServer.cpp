@@ -5,23 +5,32 @@
 #include <iostream>
 #include <string.h>
 #include <sstream>
+#pragma warning(disable: 4244)
 #include "Lib\mongoose\include\mongoose.h"
 #include "Database.h"
 #include "PerformanceData.h"
+#include "Email.h"
+//#include "Lib\libcurl\include\curl\curl.h"
+
+#pragma comment(lib, "PocoNet.lib")
 
 using namespace std;
 #define NS_HTTP_REQUEST 100 /* struct http_message * */
 
 static const char *http_port = "8000";
 static struct mg_serve_http_opts http_server_options;
-Database *prod = NULL;
-Database *test = NULL;
-//void sendEmailAlert(const string& emailAddr, const string& body, const string& subject = "PerfCheck - Email Alert") {
+Database *prod = new Database("prod.db");
 
-//}
+static void sendEmailAlert(std::string emailTo, std::string body, std::string subject = "PerfCheck - Email Alert") {
+	std::string emailFrom = "emanon4ever@gmail.com";
+	
+	Email *email = new Email(emailFrom, "Peter Newsome", "", "", emailTo, "", "", subject, body);
+	email->SendEmail();
+}
 
 static int InsertPerformanceData(PerformanceData *data, std::string tableName) {
 	int result = 0;
+	std::string insertQuery("");
 	std::stringstream ss;
 
 	printf("Checking if table: '%s' exists'", tableName.c_str());
@@ -30,7 +39,7 @@ static int InsertPerformanceData(PerformanceData *data, std::string tableName) {
 	ss.str(std::string());
 
 	result = prod->executeQuery(tableExistsQuery);
-	if (result == 0) {
+	if (result != 0) {
 		std::string createTable("");
 		ss << "CREATE TABLE " << tableName << " (id INTEGER PRIMARY KEY, memory INTEGER, cpu INTEGER, disk INTEGER);";
 		result = prod->executeQuery(ss.str());
@@ -42,11 +51,12 @@ static int InsertPerformanceData(PerformanceData *data, std::string tableName) {
 			printf("Creating table '%s' failed!", tableName.c_str());
 		}
 	}
-	else if (result == 1) { // table exists so let's insert
-		std::string insertData("");
-		ss << "INSERT INTO " << tableName << "(memory, cpu, disk) VALUES('" << data->getMemory() << "','" << data->getCPU() << "','" << data->getDiskSpace() << "');";
-		result = prod->executeQuery(ss.str());
-	}
+	// let's insert
+	
+    ss << "INSERT INTO " << tableName << "(memory, cpu, disk) VALUES('" << data->getMemory() << "','" << data->getCPU() << "','" << data->getDiskSpace() << "');";
+	insertQuery = ss.str();
+	result = prod->executeQuery(insertQuery);
+	
 	return result;
 }
 
@@ -61,13 +71,14 @@ static void handle_perfcheck_call(struct mg_connection *connection, struct http_
 	mg_get_http_var(&hm->query_string, "cpu", cpu, sizeof(cpu));
 	mg_get_http_var(&hm->query_string, "disk", disk, sizeof(disk));
 
-	//printf("memory: %s\r\n", memory);
-	//printf("cpu: %s\r\n", cpu);
-	//printf("disk: %s\r\n", disk);
+	
 
 	// insert into the database
 	PerformanceData * pd = new PerformanceData(atol(memory),atol(cpu),atol(disk));
-	int status = InsertPerformanceData(pd, performanceTable);
+	std::string emailBody = "We have an alert we need to take care of!";
+	sendEmailAlert("fanionnewsome@gmail.com", emailBody);
+	
+	//int status = InsertPerformanceData(pd, performanceTable);
 
 	prod->displayTable(performanceTable);
 	// Send Headers
@@ -116,10 +127,6 @@ int main(int argc, char *argv[])
 			http_port = argv[++i];
 		}
 	}
-
-	// open database
-    prod = new Database("prod.db");
-	test = new Database("test.db");
 
 	// Set HTTP server options
 	connection = mg_bind(&event_manager, http_port, ev_handler);
