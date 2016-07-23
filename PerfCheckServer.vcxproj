@@ -71,7 +71,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Temp\poco\poco\Net\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Temp\poco-1.7.3-all\Crypto\include;C:\OpenSSL-Win32\include;C:\Development\RAD\Console\PerfCheckServer\include;C:\Development\RAD\Console\PerfCheckServer\include\rapidxml;C:\Development\RAD\Console\PerfCheckServer\include\TinyXML2;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\OpenSSL-Win32\lib;C:\OpenSSL-Win32\lib\VC;C:\Development\RAD\Console\PerfCheckServer\Lib\poco\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -88,15 +89,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;USE_SSLEAY;USE_OPENSSL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>C:\Temp\poco\poco\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sqlite3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;PocoNet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Temp\poco\poco\lib64;C:\Temp\poco\poco\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sqlite3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Development\RAD\Console\PerfCheckServer\Lib\libcurl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -153,7 +154,10 @@
   <ItemGroup>
     <ClInclude Include="Database.h" />
     <ClInclude Include="Email.h" />
+    <ClInclude Include="EmailSettings.h" />
     <ClInclude Include="PerformanceData.h" />
+    <ClInclude Include="PocoEmail.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -161,9 +165,12 @@
   <ItemGroup>
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Email.cpp" />
+    <ClCompile Include="EmailSettings.cpp" />
     <ClCompile Include="Lib\mongoose\include\mongoose.c" />
     <ClCompile Include="PerfCheckServer.cpp" />
     <ClCompile Include="PerformanceData.cpp" />
+    <ClCompile Include="PocoEmail.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -172,8 +179,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="PocoNet.lib" />
+    <Library Include="..\..\..\..\OpenSSL-Win32\lib\libeay32.lib" />
+    <Library Include="..\..\..\..\OpenSSL-Win32\lib\ssleay32.lib" />
+    <Library Include="Lib\libcurl\lib\libcurl_a.lib" />
+    <Library Include="Lib\libcurl\lib\libcurl_a_debug.lib" />
     <Library Include="sqlite3.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="settings.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

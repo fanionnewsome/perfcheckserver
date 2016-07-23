@@ -16,6 +16,9 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{e160ac41-b148-414e-9490-a2c1448c915f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{2c1cdf96-4497-4554-9816-0fb86fe6e905}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -39,6 +42,15 @@
     <ClInclude Include="Email.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PocoEmail.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EmailSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -59,9 +71,30 @@
     <ClCompile Include="Email.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PocoEmail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EmailSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="sqlite3.lib" />
-    <Library Include="PocoNet.lib" />
+    <Library Include="Lib\libcurl\lib\libcurl_a.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="Lib\libcurl\lib\libcurl_a_debug.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\..\..\..\OpenSSL-Win32\lib\libeay32.lib" />
+    <Library Include="..\..\..\..\OpenSSL-Win32\lib\ssleay32.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="settings.xml">
+      <Filter>config</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

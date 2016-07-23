@@ -1,6 +1,47 @@
 #include "stdafx.h"
 #include "Email.h"
 
+//struct upload_status {
+//	int lines_read;
+//};
+//
+//const char *payload_text[] = {
+//	"Date: Mon, 29 Nov 2010 21:54:29 +1100\r\n",
+//	"To: " TO "\r\n",
+//	"From: " FROM "(Example User)\r\n",
+//	"Cc: " CC "(Another example User)\r\n",
+//	"Message-ID: <dcd7cb36-11db-487a-9f3a-e652a9458efd@"
+//	"rfcpedant.example.org>\r\n",
+//	"Subject: SMTP example message\r\n",
+//	"\r\n", /* empty line to divide headers from body, see RFC5322 */
+//	"The body of the message starts here.\r\n",
+//	"\r\n",
+//	"It could be a lot of lines, could be MIME encoded, whatever.\r\n",
+//	"Check RFC5322.\r\n",
+//	NULL
+//};
+//
+//static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
+//{
+//	struct upload_status *upload_ctx = (struct upload_status *)userp;
+//	const char *data;
+//
+//	if ((size == 0) || (nmemb == 0) || ((size*nmemb) < 1)) {
+//		return 0;
+//	}
+//
+//	data = payload_text[upload_ctx->lines_read];
+//
+//	if (data) {
+//		size_t len = strlen(data);
+//		memcpy(ptr, data, len);
+//		upload_ctx->lines_read++;
+//
+//		return len;
+//	}
+//
+//	return 0;
+//}
 
 Email::Email(
 	std::string sender,
@@ -22,80 +63,9 @@ Email::Email(
 	_subject(subject),
 	_body(body)
 {
-	
-
 }
 
-int Email::SendEmail() {
-
-	
-
-		/*std::stringstream ss;
-		std::string hostname("smtp.gmail.com");
-		UINT16 smtpPort = 25;
-		std::string username = "pistolpete78";
-		std::string password = "newg4y2k";
-
-		MailMessage _msg;
-
-		if (_recipient.size() > 0) {
-			_msg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT,
-				_recipient, _senderRealName));
-		}
-
-		if (_cc.size() > 0) {
-			_msg.addRecipient(MailRecipient(MailRecipient::CC_RECIPIENT, _cc, _ccRealName));
-		}
-
-		if (_bcc.size() > 0) {
-			_msg.addRecipient(MailRecipient(MailRecipient::BCC_RECIPIENT, _bcc, _bccRealName));
-		}
-
-		std::string sender("");
-		ss << _senderRealName << " " << "<" << _sender << ">";
-		sender = ss.str();
-		_msg.setSender(sender);
-
-		std::string encodedSubject = MailMessage::encodeWord(_subject, "UTF-8");
-		_msg.setSubject(encodedSubject);
-		_msg.setContentType("text/plain; charset=UTF-8");
-		_msg.setContent(_body, MailMessage::ENCODING_8BIT);
-		try
-		{
-			SMTPClientSession connection(hostname, smtpPort);
-			connection.open();
-			try
-			{
-				connection.login(SMTPClientSession::AUTH_LOGIN, username, password);
-				connection.sendMessage(_msg);
-				std::cout << "Sent mail successfully!" << std::endl;
-				connection.close();
-			}
-			catch (SMTPException &ex) {
-				std::cerr << "failed to send mail: " << ex.displayText() << std::endl;
-				return EXIT_FAILURE;
-			}
-		}
-		catch (NetException &ex) {
-			std::cerr << ex.displayText() << std::endl;
-			return EXIT_FAILURE;
-		}*/
-		return 0;
-}
-
-/*std::string Email::CurrentDateTime() {
-	time_t rawTime;
-	struct tm * timeInfo;
-	char buffer[80];
-
-	time(&rawTime);
-	timeInfo = localtime(&rawTime);
-
-	strftime(buffer, 80, "%d-%m-%Y %I:%M:%S", timeInfo);
-	std::string dateTime(buffer);
-
-	return dateTime;
-}*/
+Email::Email(){}
 
 Email::~Email()
 {

@@ -6,7 +6,11 @@ gnore Visual Studio temporary files, build results, and
 *.user
 *.userosscache
 *.sln.docstates
-
+*.dll
+*.pdb
+*.lib
+.gitignore
+*.db
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -109,6 +113,18 @@ _TeamCity*
 
 # DotCover is a Code Coverage Tool
 *.dotCover
+
+*.log
+*.sqlite
+
+# Packages
+*.7z
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
 
 # NCrunch
 _NCrunch_*
@@ -232,6 +248,14 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+*.exe
+*.class
+*.com
+*.pdb
+*.dll.config
+*.def
+*.exp
 
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
